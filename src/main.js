@@ -60,3 +60,20 @@ async function onLoadMoreClick() {
         showErrorFind();
     } 
 }
+async function onLoadMoreClick() {
+    try {
+        currentPage++; 
+        const data = await pixabayAPI.getMoreImages(currentPage); 
+        if (data.hits.length === 0) {   
+            throw new Error();
+        }
+        
+        renderMoreImages(data, refs.imgEl);         
+        
+        if (data.totalHits <= currentPage * PER_PAGE) {
+            refs.btnLoadMore.style.display = 'none';
+        }
+    } catch (error) {
+        showErrorFind();
+    } 
+}

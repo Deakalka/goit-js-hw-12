@@ -8,7 +8,6 @@ export class PixabayAPI {
     constructor() {
         this.query = null;
     }
-
     async getImages() {
         const params = {
             key: API_KEY,
@@ -16,18 +15,18 @@ export class PixabayAPI {
             page: 1, 
             per_page: PER_PAGE,
         };
-        const url = `${BASE_URL}`;
-        return axios.get(url, { params }).then(res => res.data);
+        const url = `${BASE_URL}?${new URLSearchParams(params)}`;
+        return axios.get(url).then(res => res.data);
     }
-
+    
     async getMoreImages(page) {
         const params = {
             key: API_KEY,
             q: this.query,
-            page: this.page, 
+            page: page, 
             per_page: PER_PAGE,
         };
-        const url = `${BASE_URL}`;
-        return axios.get(url, { params }).then(res => res.data);
+        const url = `${BASE_URL}?${new URLSearchParams(params)}`;
+        return axios.get(url).then(res => res.data);
     }
 }
