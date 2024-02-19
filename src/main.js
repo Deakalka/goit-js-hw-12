@@ -1,7 +1,8 @@
+
 import iziToast from "izitoast";
 import "izitoast/dist/css/iziToast.min.css";
 import { PixabayAPI } from "./js/pixabay-api";
-import { renderImages, renderMoreImages, showErrorMatch, showErrorFind } from "./js/render-functions";
+import { renderImages, renderMoreImages, showErrorMatch } from "./js/render-functions";
 
 const refs = {
     formEl: document.querySelector('.js-search-form'),
@@ -9,6 +10,9 @@ const refs = {
     loader: document.querySelector('.loader'),
     btnLoadMore: document.querySelector('.loadmore-btn'),
 };
+
+let currentPage = 1;
+let currentQuery = ''; 
 
 function showLoader() {
     refs.loader.classList.remove('hidden');
@@ -22,58 +26,50 @@ refs.formEl.addEventListener('submit', onFormSubmit);
 refs.btnLoadMore.addEventListener('click', onLoadMoreClick);
 
 const pixabayAPI = new PixabayAPI();
-let currentPage = 1; 
 
 async function onFormSubmit(e) {
     e.preventDefault();
     showLoader();
 
-    const query = e.target.elements.text.value; 
-    pixabayAPI.query = query;
+    const query = e.target.elements.text.value;
+    currentQuery = query; 
     currentPage = 1; 
 
     try {
-        const data = await pixabayAPI.getImages();
+        const data = await pixabayAPI.getImages(query); 
         renderImages(data, refs.imgEl);
         if (data.hits.length === 0) {
             throw new Error('No images found');
         }
-   
+
         refs.btnLoadMore.style.display = 'block';
     } catch (error) {
         showErrorMatch();
     } finally {
-        hideLoader(); 
+        hideLoader();
     }
 }
 
+
 async function onLoadMoreClick() {
     try {
+        const data = await pixabayAPI.getMoreImages(currentQuery, currentPage); 
+    
+        renderMoreImages(data, refs.imgEl);
         currentPage++; 
-        const data = await pixabayAPI.getMoreImages(currentPage); 
-         if (data.hits.length === 0) {   
-            throw new Error();
-        }
         
-        renderMoreImages(data, refs.imgEl);         
-    } catch (error) {
-        showErrorFind();
-    } 
-}
-async function onLoadMoreClick() {
-    try {
-        currentPage++; 
-        const data = await pixabayAPI.getMoreImages(currentPage); 
-        if (data.hits.length === 0) {   
-            throw new Error();
-        }
-        
-        renderMoreImages(data, refs.imgEl);         
-        
-        if (data.totalHits <= currentPage * PER_PAGE) {
+        if (data.hits.length < 15) {
+           
             refs.btnLoadMore.style.display = 'none';
+              iziToast.show({
+                title: '',
+                message: "We're sorry, but you've reached the end of search results.",
+                color: 'red',
+                position: 'topRight'
+            });
         }
     } catch (error) {
-        showErrorFind();
-    } 
+        refs.btnLoadMore.style.display = 'block';
+    }
+    
 }
