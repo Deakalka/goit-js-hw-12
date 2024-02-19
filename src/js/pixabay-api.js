@@ -11,6 +11,9 @@ export class PixabayAPI {
         const params = {
             key: API_KEY,
             q: query,
+            image_type: 'photo', 
+            orientation: 'horizontal', 
+            safesearch: true, 
             page: 1,
             per_page: PER_PAGE,
         };
@@ -18,16 +21,18 @@ export class PixabayAPI {
         return axios.get(url, { params }).then(res => res.data);
     }
 
-   async getMoreImages(query, page) {
+    async getMoreImages(query, page) {
         page++;
-    const params = {
-        key: API_KEY,
-        q: query,
-        page: page,
-        per_page: PER_PAGE,
-    };
-    const url = `${BASE_URL}`;
-    return axios.get(url, { params }).then(res => res.data);
-}
-
+        const params = {
+            key: API_KEY,
+            q: query,
+            image_type: 'photo',
+            orientation: 'horizontal', 
+            safesearch: true, 
+            page: page,
+            per_page: PER_PAGE,
+        };
+        const url = `${BASE_URL}`;
+        return axios.get(url, { params }).then(res => res.data);
+    }
 }

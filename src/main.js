@@ -1,4 +1,3 @@
-
 import iziToast from "izitoast";
 import "izitoast/dist/css/iziToast.min.css";
 import { PixabayAPI } from "./js/pixabay-api";
@@ -31,9 +30,18 @@ async function onFormSubmit(e) {
     e.preventDefault();
     showLoader();
 
-    const query = e.target.elements.text.value;
+    const query = e.target.elements.text.value.trim(); // Використовуємо trim(), щоб видалити зайві пробіли
     currentQuery = query; 
     currentPage = 1; 
+    
+    if (!query) {
+        hideLoader();
+        iziToast.warning({
+            position: "topRight",
+            message: 'Please enter a search query.',
+        });
+        return;
+    }
 
     try {
         const data = await pixabayAPI.getImages(query); 
@@ -50,7 +58,6 @@ async function onFormSubmit(e) {
     }
 }
 
-
 async function onLoadMoreClick() {
     try {
         const data = await pixabayAPI.getMoreImages(currentQuery, currentPage); 
@@ -59,9 +66,8 @@ async function onLoadMoreClick() {
         currentPage++; 
         
         if (data.hits.length < 15) {
-           
             refs.btnLoadMore.style.display = 'none';
-              iziToast.show({
+            iziToast.show({
                 title: '',
                 message: "We're sorry, but you've reached the end of search results.",
                 color: 'red',
@@ -71,5 +77,4 @@ async function onLoadMoreClick() {
     } catch (error) {
         refs.btnLoadMore.style.display = 'block';
     }
-    
 }
