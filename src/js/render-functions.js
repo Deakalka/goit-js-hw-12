@@ -26,6 +26,8 @@ export function showErrorMatch() {
         position: "topRight",
         message: 'Sorry, there are no images matching your search query. Please try again!',
     });
+    e.hideLoader();
+
 }
 
 function imgTemplate(photo) {

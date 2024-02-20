@@ -40,6 +40,7 @@ async function onFormSubmit(e) {
             position: "topRight",
             message: 'Please enter a search query.',
         });
+        refs.btnLoadMore.style.display = 'none';
         return;
     }
 
